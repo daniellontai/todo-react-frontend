@@ -1,0 +1,137 @@
+* {
+	font-family: sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+	body {
+		--main-bg-color: #bbbbbb;
+		--secondary-bg-color: #ccceee;
+		--text-color: #333;
+		--accent-color: rgba(119, 119, 255, 1):
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		--main-bg-color: #222;
+		--secondary-bg-color: #333444;
+		--text-color: #fefefe;
+		--accent-color: rgba(119, 119, 255, 0.5):
+	}
+	:root {
+		--accent-color: rgba(119, 119, 255, 0.5):
+	}
+}
+
+* {
+	color: var(--text-color);
+}
+
+body {
+		background-color: var(--main-bg-color);
+	}
+
+.todo-container {
+	background: var(--secondary-bg-color);
+	max-width: 1140px;
+	margin: auto;
+	padding: 20px;
+}
+
+.task-list {
+	max-width: 800px;
+	margin: auto;
+}
+.tasks-header,
+.task-row,
+.task-new {
+	display: grid;
+	padding: 10px;
+	align-items: center;
+}
+
+input {
+	height: 30px;
+	padding: 5px;
+	background: transparent;
+	border: none;
+	border-bottom: 1px solid;
+	border-bottom-color: rgba(119, 119, 255, 0.5);
+	text-align: left;
+}
+
+button {
+	cursor: pointer;
+	border-radius: 500px;
+	width: 30px;
+	height: 30px;
+}
+
+button * {
+	color: #333;
+	font-size: 18px;
+}
+
+.tasks-header {
+	grid-template-columns: 1fr 15fr;
+}
+
+.task-row {
+	grid-template-columns: 1fr 14fr 1fr;
+	padding: 0;
+	margin: 0 0 15px;
+}
+
+.task-new {
+	grid-template-columns: 1fr;
+	justify-items: center;
+}
+
+.tasks-header div:nth-child(1) {
+	grid-column-start: 2;
+}
+
+.task-row div {
+	display: grid;
+	padding: 0 2px;
+}
+
+.task-row > *:nth-child(1),
+.task-row > *:nth-child(3) {
+	justify-self: center;
+}
+
+.task-row.complete input {
+	text-decoration: line-through;
+	color: #666;
+}
+
+.task-row.complete > *:nth-child(3) * {
+  color: rgb(72, 235, 72);
+}
+
+.task-row.complete > *:nth-child(3) button {
+  background: rgb(204, 238, 204);
+}
+
+.error-container {
+	max-width: 760px;
+	margin: auto;
+	background: #d77474;
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 20px;
+}
+
+.loading p {
+	text-align: center;
+	margin: 0;
+	position: relative;
+	bottom: 15px;
+}
+
+.loading {
+	width: 100px;
+	height: 100px;
+	margin: auto;
+}
