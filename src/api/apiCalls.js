@@ -1,5 +1,3 @@
-import env from "react-dotenv";
-
 const apiEndpoints = {
     get_tasks:          "/tasks",
     post_task:          "/task",
@@ -137,7 +135,7 @@ function clearErrorMessage(setErrorMessage) {
  * @return {string} The generated API URL.
  */
 function generateApiUrl(endpoint, id = 0) {
-    const apiBaseUrl = env.API_URL;
+    let apiBaseUrl = window.env.REACT_APP_API_URL;
     let idCondition = (Number.isInteger(id) && id > 0);
     switch (endpoint) {
         case "get_tasks":
