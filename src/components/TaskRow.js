@@ -22,7 +22,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
     const [descriptionValue, setDescriptionValue] = useState(taskDescription);
     //const [isTaskRowLoading, setIsTaskRowLoading] = useState(false);
     const descriptionOnBlurDelay = useRef(null);
-    const firstRender = useRef(true);
+    const taskRowFirstRender = useRef(true);
     
 
     /**
@@ -44,14 +44,6 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                     setErrorMessage(response.error[0].message);
                     return;
                 }else {
-                    let nextTasks = new Map(currentTasks);
-
-                    if (nextTasks.has(taskIdToDel)) {
-                        nextTasks.delete(taskIdToDel);
-                    }
-
-                    setTasks(nextTasks);
-
                     if (handlingKeyPress) {
                         let previousKey = null;
                         for (let [key, task] of nextTasks) {
@@ -63,7 +55,13 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                         setTaskRowKeyToFocus(previousKey);
                     }
                     
-                    
+                    let nextTasks = new Map(currentTasks);
+
+                    if (nextTasks.has(taskIdToDel)) {
+                        nextTasks.delete(taskIdToDel);
+                    }
+
+                    setTasks(nextTasks);
                 }
             } catch (error) {
                 //todo: logging
@@ -114,8 +112,8 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
      * @return {void} a Promise that resolves when the update is handled
      */
     async function descriptionUpdateHandler(isBlur = false) {
-        if (firstRender.current) {
-            firstRender.current = false;
+        if (taskRowFirstRender.current) {
+            taskRowFirstRender.current = false;
             return;
         }
         clearTimeout(descriptionOnBlurDelay.current);
