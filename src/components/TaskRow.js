@@ -18,9 +18,9 @@ import { useEffect, useRef, useState } from 'react';
  * @param {function} setTaskRowKeyToFocus - The function to set the key of the task row to focus
  * @return {React.JSX.Element} The task row component
  */
-export default function TaskRow({ taskId, taskDescription, taskComplete, currentTasks, setTasks, setErrorMessage, newTaskHandler, taskRowKeyToFocus, setTaskRowKeyToFocus }) {
+export default function TaskRow({ taskId, taskDescription, taskComplete, currentTasks, setTasks, setErrorMessage, newTaskHandler, isLoading, setIsLoading, taskRowKeyToFocus, setTaskRowKeyToFocus }) {
     const [descriptionValue, setDescriptionValue] = useState(taskDescription);
-    const [isTaskRowLoading, setisTaskRowLoading] = useState(false);
+    //const [isTaskRowLoading, setIsTaskRowLoading] = useState(false);
     const descriptionOnBlurDelay = useRef(null);
     const firstRender = useRef(true);
     
@@ -33,11 +33,13 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
      */
     async function delTaskHandler(taskIdToDel, handlingKeyPress = false) {
         clearErrorMessage(setErrorMessage);
-        if (!isTaskRowLoading) {
+        if (!isLoading) {
             try {
-                setisTaskRowLoading(true);
+                setIsLoading(true);
+                //setIsTaskRowLoading(true);
                 const response = await delTask(taskIdToDel);
-                setisTaskRowLoading(false);
+                //setIsTaskRowLoading(false);
+                setIsLoading(false);
                 if (response.error) {
                     setErrorMessage(response.error[0].message);
                     return;
@@ -77,15 +79,17 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
      */
     async function completeTaskHandler(taskIdToComplete, taskComplete) {
         clearErrorMessage(setErrorMessage);
-        if (!isTaskRowLoading) {
+        if (!isLoading) {
             try {
-                setisTaskRowLoading(true);
+                setIsLoading(true);
+                //setIsTaskRowLoading(true);
                 const response = await patchTask(taskIdToComplete, 
                     {
                         complete: !taskComplete
                     }
                 );
-                setisTaskRowLoading(false);
+                //setIsTaskRowLoading(false);
+                setIsLoading(false);
                 if (response.error) {
                     setErrorMessage(response.error[0].message);
                     return;
@@ -121,13 +125,15 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
         descriptionOnBlurDelay.current = setTimeout(async () => {
             clearErrorMessage(setErrorMessage);
             try {
-                setisTaskRowLoading(true);
+                setIsLoading(true);
+                //setIsTaskRowLoading(true);
                 const response = await patchTask(taskId, 
                     {
                         description: descriptionValue
                     }
                 );
-                setisTaskRowLoading(false);
+                //setIsTaskRowLoading(false);
+                setIsLoading(false);
                 if (response.error) {
                     setErrorMessage(response.error[0].message);
                     return;
@@ -160,7 +166,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                 delTaskHandler={() => {delTaskHandler(taskId, true)}}
                 taskRowKeyToFocus={taskRowKeyToFocus}
                 onBlurHandler={() => {descriptionUpdateHandler(true)}}
-                isTaskRowLoading={isTaskRowLoading}
+                isLoading={isLoading}
             /></div>
             <div><CompleteTaskBtn
                 clickHandler={() => completeTaskHandler(taskId, taskComplete)}
