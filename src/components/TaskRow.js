@@ -44,6 +44,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                     setErrorMessage(response.error[0].message);
                     return;
                 }else {
+                    let nextTasks = new Map(currentTasks);
                     if (handlingKeyPress) {
                         let previousKey = null;
                         for (let [key, task] of nextTasks) {
@@ -54,8 +55,6 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                         }
                         setTaskRowKeyToFocus(previousKey);
                     }
-                    
-                    let nextTasks = new Map(currentTasks);
 
                     if (nextTasks.has(taskIdToDel)) {
                         nextTasks.delete(taskIdToDel);
