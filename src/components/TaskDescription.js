@@ -13,8 +13,9 @@ import { useState, useRef, useEffect } from 'react';
  * @return {React.JSX.Element} - Input field for task description
  */
 export default function TaskDescription({ taskId, taskDescription, setDescriptionValue, newTaskHandler, completeTaskHandler, delTaskHandler, taskRowKeyToFocus, onBlurHandler, isLoading }) {
-    const [hasDeleted, setHasDeleted] = useState(false);
-    const [hasCreated, setHasCreated] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isCompleting, setIsCompleting] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
 
     const inputRef = useRef(null);
 
@@ -27,24 +28,26 @@ export default function TaskDescription({ taskId, taskDescription, setDescriptio
     }, [taskRowKeyToFocus, taskId]);
 
     const handleKeyDown = (event) => {
-        if (event.key === 'Backspace' && event.target.value === "" && !hasDeleted) {
+        if (event.key === 'Backspace' && event.target.value === "" && !isDeleting && !isLoading) {
             delTaskHandler();
-            setHasDeleted(true);
-        }else if (event.key === 'Enter' && event.ctrlKey) {
+            setIsDeleting(true);
+        }else if (event.key === 'Enter' && event.ctrlKey && !isCompleting && !isLoading) {
             completeTaskHandler();
-        }else if (event.key === 'Enter' && !hasCreated) {
+            setIsCompleting(true);
+        }else if (event.key === 'Enter' && !isCreating && !isLoading) {
             newTaskHandler();
-            setHasCreated(true);
+            setIsCreating(true);
         }
         
     };
 
     const handleKeyUp = (event) => {
-        /*if (event.key === 'Backspace') {
-            setHasDeleted(false);
-        }else */
-        if (event.key === 'Enter' && hasCreated) {
-            setHasCreated(false);
+        if (event.key === 'Backspace' && isDeleting) {
+            setIsDeleting(false);
+        }else if (event.key === 'Enter' && isCreating) {
+            setIsCreating(false);
+        }else if ((event.key === 'Enter' || event.ctrlKey) && isCompleting) {
+            setIsCompleting(false);
         }
     };
     return (
