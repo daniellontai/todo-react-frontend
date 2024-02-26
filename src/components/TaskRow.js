@@ -117,27 +117,28 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
             return;
         }
         clearTimeout(descriptionOnBlurDelay.current);
-        let delayMilliseconds = 5000;
-        isBlur ? delayMilliseconds = 0 : delayMilliseconds = 5000;
-        debugger;
+        let delayMilliseconds;
+        isBlur ? delayMilliseconds = 0 : delayMilliseconds = 3000;
         descriptionOnBlurDelay.current = setTimeout(async () => {
             clearErrorMessage(setErrorMessage);
-            try {
-                setIsLoading(true);
-                //setIsTaskRowLoading(true);
-                const response = await patchTask(taskId, 
-                    {
-                        description: descriptionValue
+            if (descriptionValue !== taskDescription) {
+                try {
+                    setIsLoading(true);
+                    //setIsTaskRowLoading(true);
+                    const response = await patchTask(taskId, 
+                        {
+                            description: descriptionValue
+                        }
+                    );
+                    //setIsTaskRowLoading(false);
+                    setIsLoading(false);
+                    if (response.error) {
+                        setErrorMessage(response.error[0].message);
+                        return;
                     }
-                );
-                //setIsTaskRowLoading(false);
-                setIsLoading(false);
-                if (response.error) {
-                    setErrorMessage(response.error[0].message);
-                    return;
+                } catch (error) {
+                    //todo: logging
                 }
-            } catch (error) {
-                //todo: logging
             }
         }, delayMilliseconds);
     }
