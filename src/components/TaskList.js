@@ -10,10 +10,11 @@ import { postTask, clearErrorMessage } from '../api/apiCalls.js';
  * @param {function} setTasks - a function to set the list of tasks
  * @param {string} errorMessage - the error message
  * @param {function} setErrorMessage - a function to set the error message
+ * @param {boolean} isLoading - boolean representing loading state
  * @param {function} setIsLoading - a function to set the loading state
  * @return {React.JSX.Element} the rendered task list component
  */
-export default function TaskList({ currentTasks, setTasks, errorMessage, setErrorMessage, setIsLoading }) {
+export default function TaskList({ currentTasks, setTasks, errorMessage, setErrorMessage, isLoading, setIsLoading }) {
     const [taskRowKeyToFocus, setTaskRowKeyToFocus] = useState(-1);
     
     /**
@@ -24,27 +25,29 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
     async function newTaskBtnClick() {
         //TODO: rename to newTaskHandler()
         clearErrorMessage(setErrorMessage);
-        try {
-            setIsLoading(true);
-            const response = await postTask(
-                {
-                    description: "",
-                    complete: false
+        if (!isLoading) {
+            try {
+                setIsLoading(true);
+                const response = await postTask(
+                    {
+                        description: "",
+                        complete: false
+                    }
+                );
+                setIsLoading(false);
+                if (response.error) {
+                    setErrorMessage(response.error[0].message);
+                    return;
+                }else if(response.id) { 
+                    let nextTasks = new Map(currentTasks);
+                    nextTasks.set(response.id, {id: response.id, description: response.description, complete: response.complete});
+                    setTasks(nextTasks);
+                    setTaskRowKeyToFocus(response.id);
                 }
-            );
-            setIsLoading(false);
-            if (response.error) {
-                setErrorMessage(response.error[0].message);
-                return;
-            }else if(response.id) { 
-                let nextTasks = new Map(currentTasks);
-                nextTasks.set(response.id, {id: response.id, description: response.description, complete: response.complete});
-                setTasks(nextTasks);
-                setTaskRowKeyToFocus(response.id);
+            }catch (error) {
+                setErrorMessage(error[0].message);
+                //todo: logging
             }
-        }catch (error) {
-            setErrorMessage(error[0].message);
-            //todo: logging
         }
     }
 
@@ -65,6 +68,7 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
                     setTasks={setTasks}
                     setErrorMessage={setErrorMessage}
                     newTaskHandler={newTaskBtnClick}
+                    isLoading={isLoading}
                     setIsLoading={setIsLoading}
                     taskRowKeyToFocus={taskRowKeyToFocus}
                     setTaskRowKeyToFocus={setTaskRowKeyToFocus}

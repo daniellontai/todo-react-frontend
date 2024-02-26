@@ -12,7 +12,7 @@ import { useState, useRef, useEffect } from 'react';
  * @param {number} taskRowKeyToFocus - The key of the task row to focus on
  * @return {React.JSX.Element} - Input field for task description
  */
-export default function TaskDescription({ taskId, taskDescription, setDescriptionValue, newTaskHandler, completeTaskHandler, delTaskHandler, taskRowKeyToFocus }) {
+export default function TaskDescription({ taskId, taskDescription, setDescriptionValue, newTaskHandler, completeTaskHandler, delTaskHandler, taskRowKeyToFocus, onBlurHandler, isTaskRowLoading }) {
     const [hasDeleted, setHasDeleted] = useState(false);
     const [hasCreated, setHasCreated] = useState(false);
 
@@ -53,7 +53,8 @@ export default function TaskDescription({ taskId, taskDescription, setDescriptio
             ref={inputRef}
             defaultValue={taskDescription}
             placeholder="Add task description..."
-            onChange={(event) => setDescriptionValue(event.target.value)}
+            onChange={(event) => console.log(event.target.value)}
+            onBlur={onBlurHandler}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
         />

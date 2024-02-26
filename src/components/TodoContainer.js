@@ -23,6 +23,7 @@ export default function TodoContainer({ currentTasks, setTasks, errorMessage, se
                 setTasks={setTasks}
                 errorMessage={errorMessage}
                 setErrorMessage={setErrorMessage}
+                isloading={isLoading}
                 setIsLoading={setIsLoading} />}
                 {isLoading && <Loader />}
             </div>
@@ -35,6 +36,7 @@ export default function TodoContainer({ currentTasks, setTasks, errorMessage, se
                 setTasks={setTasks}
                 errorMessage={errorMessage}
                 setErrorMessage={setErrorMessage}
+                isloading={isLoading}
                 setIsLoading={setIsLoading} />
                 {isLoading && <Loader />}
             </div>
@@ -52,7 +54,7 @@ function Loader() {
     return(
         <>
             <div className="loading">
-                <svg width="100px" height="100px" display="block" shape-rendering="auto" style={{margin: "auto"}} preserveAspectRatio="xMidYMid" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <svg width="100px" height="100px" display="block" shapeRendering="auto" style={{margin: "auto"}} preserveAspectRatio="xMidYMid" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                     <g fill="#e74752">
                     <circle cx="60" cy="50" r="4">
                     <animate attributeName="cx" begin="-0.67s" dur="1s" keyTimes="0;1" repeatCount="indefinite" values="95;35"/>

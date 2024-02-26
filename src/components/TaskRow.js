@@ -14,15 +14,16 @@ import { useEffect, useRef, useState } from 'react';
  * @param {function} setTasks - The function to set tasks
  * @param {function} setErrorMessage - The function to set error message
  * @param {function} newTaskHandler - The function to handle new tasks
- * @param {function} setIsLoading - The function to set loading status
  * @param {number} taskRowKeyToFocus - The key of the task row to focus
  * @param {function} setTaskRowKeyToFocus - The function to set the key of the task row to focus
  * @return {React.JSX.Element} The task row component
  */
-export default function TaskRow({ taskId, taskDescription, taskComplete, currentTasks, setTasks, setErrorMessage, newTaskHandler, setIsLoading, taskRowKeyToFocus, setTaskRowKeyToFocus }) {
+export default function TaskRow({ taskId, taskDescription, taskComplete, currentTasks, setTasks, setErrorMessage, newTaskHandler, taskRowKeyToFocus, setTaskRowKeyToFocus }) {
     const [descriptionValue, setDescriptionValue] = useState(taskDescription);
+    const [isTaskRowLoading, setisTaskRowLoading] = useState(false);
     const descriptionOnBlurDelay = useRef(null);
     const firstRender = useRef(true);
+    
 
     /**
      * An asynchronous function to handle the deletion of a task.
@@ -30,30 +31,41 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
      * @param {number} taskIdToDel - The ID of the task to be deleted
      * @return {void}
      */
-    async function delTaskHandler(taskIdToDel) {
+    async function delTaskHandler(taskIdToDel, handlingKeyPress = false) {
         clearErrorMessage(setErrorMessage);
-        try {
-            setIsLoading(true);
-            const response = await delTask(taskIdToDel);
-            setIsLoading(false);
-            if (response.error) {
-                setErrorMessage(response.error[0].message);
-                return;
-            }else {
-                let nextTasks = new Map(currentTasks);
-                let previousKey = null;
-                for (let [key, task] of nextTasks) {
-                    if (task.id === taskIdToDel) {
-                        nextTasks.delete(key);
-                        break; // exit the loop once the task is found and deleted
+        if (!isTaskRowLoading) {
+            try {
+                setisTaskRowLoading(true);
+                const response = await delTask(taskIdToDel);
+                setisTaskRowLoading(false);
+                if (response.error) {
+                    setErrorMessage(response.error[0].message);
+                    return;
+                }else {
+                    let nextTasks = new Map(currentTasks);
+
+                    if (nextTasks.has(taskIdToDel)) {
+                        nextTasks.delete(taskIdToDel);
                     }
-                    previousKey = key;
+
+                    setTasks(nextTasks);
+
+                    if (handlingKeyPress) {
+                        let previousKey = null;
+                        for (let [key, task] of nextTasks) {
+                            if (task.id === taskIdToDel) {
+                                break; // exit the loop once the task is found and deleted
+                            }
+                            previousKey = key;
+                        }
+                        setTaskRowKeyToFocus(previousKey);
+                    }
+                    
+                    
                 }
-                setTasks(nextTasks);
-                setTaskRowKeyToFocus(previousKey);
+            } catch (error) {
+                //todo: logging
             }
-        } catch (error) {
-            //todo: logging
         }
     }
 
@@ -65,46 +77,57 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
      */
     async function completeTaskHandler(taskIdToComplete, taskComplete) {
         clearErrorMessage(setErrorMessage);
-        try {
-            setIsLoading(true);
-            const response = await patchTask(taskIdToComplete, 
-                {
-                    complete: !taskComplete
+        if (!isTaskRowLoading) {
+            try {
+                setisTaskRowLoading(true);
+                const response = await patchTask(taskIdToComplete, 
+                    {
+                        complete: !taskComplete
+                    }
+                );
+                setisTaskRowLoading(false);
+                if (response.error) {
+                    setErrorMessage(response.error[0].message);
+                    return;
+                }else {
+                    let nextTasks = new Map(currentTasks);
+                    if (nextTasks.has(taskIdToComplete)) {
+                        let task = nextTasks.get(taskIdToComplete);
+                        nextTasks.set(taskIdToComplete, {...task, complete: !task.complete});
+                    }
+                    setTasks(nextTasks);
                 }
-            );
-            setIsLoading(false);
-            if (response.error) {
-                setErrorMessage(response.error[0].message);
-                return;
-            }else {
-                let nextTasks = new Map(currentTasks);
-                if (nextTasks.has(taskIdToComplete)) {
-                    let task = nextTasks.get(taskIdToComplete);
-                    nextTasks.set(taskIdToComplete, {...task, complete: !task.complete});
-                }
-                setTasks(nextTasks);
+            } catch (error) {
+                //todo: logging
             }
-        } catch (error) {
-            //todo: logging
         }
     }
 
-    useEffect(() => {
+    /**
+     * Function to handle the update of description with an optional blur flag.
+     *
+     * @param {boolean} isBlur - flag indicating if the update is due to blur
+     * @return {void} a Promise that resolves when the update is handled
+     */
+    async function descriptionUpdateHandler(isBlur = false) {
         if (firstRender.current) {
             firstRender.current = false;
             return;
         }
         clearTimeout(descriptionOnBlurDelay.current);
+        let delayMilliseconds = 5000;
+        isBlur ? delayMilliseconds = 0 : delayMilliseconds = 5000;
+        debugger;
         descriptionOnBlurDelay.current = setTimeout(async () => {
             clearErrorMessage(setErrorMessage);
             try {
-                setIsLoading(true);
+                setisTaskRowLoading(true);
                 const response = await patchTask(taskId, 
                     {
                         description: descriptionValue
                     }
                 );
-                setIsLoading(false);
+                setisTaskRowLoading(false);
                 if (response.error) {
                     setErrorMessage(response.error[0].message);
                     return;
@@ -112,7 +135,11 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
             } catch (error) {
                 //todo: logging
             }
-        }, 5000);
+        }, delayMilliseconds);
+    }
+
+    useEffect(() => {
+        descriptionUpdateHandler();
         return () => {
             clearTimeout(descriptionOnBlurDelay.current);
         };
@@ -130,8 +157,11 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                 setDescriptionValue={setDescriptionValue}
                 newTaskHandler={newTaskHandler}
                 completeTaskHandler={() => {completeTaskHandler(taskId, taskComplete)}}
-                delTaskHandler={() => {delTaskHandler(taskId)}}
-                taskRowKeyToFocus={taskRowKeyToFocus} /></div>
+                delTaskHandler={() => {delTaskHandler(taskId, true)}}
+                taskRowKeyToFocus={taskRowKeyToFocus}
+                onBlurHandler={() => {descriptionUpdateHandler(true)}}
+                isTaskRowLoading={isTaskRowLoading}
+            /></div>
             <div><CompleteTaskBtn
                 clickHandler={() => completeTaskHandler(taskId, taskComplete)}
             /></div>
