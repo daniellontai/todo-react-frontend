@@ -2,7 +2,7 @@ import DelTaskBtn from './DelTaskBtn.js';
 import TaskDescription from './TaskDescription.js';
 import CompleteTaskBtn from './CompleteTaskBtn.js';
 import { delTask, patchTask, clearErrorMessage, generateErrorString } from '../api/apiCalls.js';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * Function for managing task row operations.
@@ -18,18 +18,18 @@ import { useEffect, useRef, useState } from 'react';
  * @param {function} setTaskRowKeyToFocus - The function to set the key of the task row to focus
  * @return {React.JSX.Element} The task row component
  */
-export default function TaskRow({ taskId, taskDescription, taskComplete, currentTasks, setTasks, setErrorMessage, newTaskHandler, isLoading, setIsLoading, taskRowKeyToFocus, setTaskRowKeyToFocus, isAnyRowDeleting }) {
-    const [descriptionValue, setDescriptionValue] = useState(taskDescription);
+export default function TaskRow({ taskId, taskDescription, taskComplete, currentTasks, setTasks, setErrorMessage, newTaskHandler, isLoading, setIsLoading, taskRowKeyToFocus, setTaskRowKeyToFocus, isAnyRowDeleting, isAnyRowCompleting }) {
+    //const [descriptionValue, setDescriptionValue] = useState(taskDescription);
     //const [isTaskRowLoading, setIsTaskRowLoading] = useState(false);
     const descriptionOnBlurDelay = useRef(null);
     const taskRowFirstRender = useRef(true);
-    
 
     /**
-     * An asynchronous function to handle the deletion of a task.
+     * A function to handle the deletion of a task.
      *
-     * @param {number} taskIdToDel - The ID of the task to be deleted
-     * @return {void}
+     * @param {type} taskIdToDel - the ID of the task to be deleted
+     * @param {type} handlingKeyPress - a boolean indicating if the function is handling a key press
+     * @return {type} undefined
      */
     async function delTaskHandler(taskIdToDel, handlingKeyPress = false) {
         clearErrorMessage(setErrorMessage);
@@ -43,6 +43,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                 setIsLoading(false);
                 if (response.error) {
                     setErrorMessage(generateErrorString(response.error));
+                    isAnyRowDeleting.current = false;
                     return;
                 }else {
                     let nextTasks = new Map(currentTasks);
@@ -78,7 +79,8 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
      */
     async function completeTaskHandler(taskIdToComplete, taskComplete) {
         clearErrorMessage(setErrorMessage);
-        if (!isLoading) {
+        if (!isLoading && !isAnyRowCompleting.current) {
+            isAnyRowCompleting.current = true;
             try {
                 setIsLoading(true);
                 //setIsTaskRowLoading(true);
@@ -91,6 +93,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                 setIsLoading(false);
                 if (response.error) {
                     setErrorMessage(generateErrorString(response.error));
+                    isAnyRowCompleting.current = false;
                     return;
                 }else {
                     let nextTasks = new Map(currentTasks);
@@ -103,16 +106,19 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
             } catch (error) {
                 //todo: logging - network error || type error || invalid json response
             }
+            isAnyRowCompleting.current = false;
         }
     }
 
     /**
-     * Function to handle the update of description with an optional blur flag.
+     * A function to handle the update of a description. Used by TaskDescription and DelTaskBtn
      *
-     * @param {boolean} isBlur - flag indicating if the update is due to blur
-     * @return {void} a Promise that resolves when the update is handled
+     * @param {string} newDescription - the new description to be updated
+     * @param {boolean} [isBlur=false] - indicates if the update is due to a blur event
+     * @return {void} 
      */
-    async function descriptionUpdateHandler(isBlur = false) {
+    async function descriptionUpdateHandler(newDescription, isBlur = false) {
+        //setDescriptionValue(newDescription);
         if (taskRowFirstRender.current) {
             taskRowFirstRender.current = false;
             return;
@@ -122,13 +128,13 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
         isBlur ? delayMilliseconds = 0 : delayMilliseconds = 3000;
         descriptionOnBlurDelay.current = setTimeout(async () => {
             clearErrorMessage(setErrorMessage);
-            if (descriptionValue !== taskDescription) {
+            if (newDescription !== taskDescription) {
                 try {
                     setIsLoading(true);
                     //setIsTaskRowLoading(true);
                     const response = await patchTask(taskId, 
                         {
-                            description: descriptionValue
+                            description: newDescription
                         }
                     );
                     //setIsTaskRowLoading(false);
@@ -136,6 +142,10 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                     if (response.error) {
                         setErrorMessage(generateErrorString(response.error));
                         return;
+                    }else {
+                        let nextTasks = new Map(currentTasks);
+                        nextTasks.set(taskId, { ...nextTasks.get(taskId), description: newDescription });
+                        setTasks(nextTasks);
                     }
                 } catch (error) {
                     //todo: logging - network error || type error || invalid json response
@@ -145,11 +155,10 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
     }
 
     useEffect(() => {
-        descriptionUpdateHandler();
         return () => {
             clearTimeout(descriptionOnBlurDelay.current);
         };
-    }, [descriptionValue]);
+    }, []);
 
     let cssClass = "task-row" + ((taskComplete) ? " complete" : "");
     return (
@@ -160,12 +169,11 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
             <div><TaskDescription
                 taskId={taskId}
                 taskDescription={taskDescription}
-                setDescriptionValue={setDescriptionValue}
                 newTaskHandler={newTaskHandler}
                 completeTaskHandler={() => {completeTaskHandler(taskId, taskComplete)}}
                 delTaskHandler={() => {delTaskHandler(taskId, true)}}
                 taskRowKeyToFocus={taskRowKeyToFocus}
-                onBlurHandler={() => {descriptionUpdateHandler(true)}}
+                descriptionUpdateHandler={descriptionUpdateHandler}
                 isLoading={isLoading}
             /></div>
             <div><CompleteTaskBtn

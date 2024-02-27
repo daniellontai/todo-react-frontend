@@ -10,7 +10,7 @@ import { useState, useEffect, useRef } from 'react';
 export default function TodoApp(){
     const [currentTasks, setTasks] = useState(new Map());
     const [errorMessage, setErrorMessage] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const errorMessageTimeout = useRef(null);
 
     useEffect(() => {
@@ -33,14 +33,17 @@ export default function TodoApp(){
             }
 
             data.sort((a, b) => {
-                if(a.complete === true && b.complete ===false) {
-                    return 1;
-                }else {
-                    return -1;
-                }
+            if (a.complete === b.complete) {
+                // If both completions are equal, keeepe the sort by task id
+                return a.id - b.id;
+            } else if (a.complete) {
+                return 1;
+            } else {
+                return -1;
+            }
             });
-            const tasksMap = new Map(data.map(task => [task.id, task]));
-            setTasks(tasksMap);
+            const nextTasks = new Map(data.map(task => [task.id, task]));
+            setTasks(nextTasks);
         }).catch(error => {
             setErrorMessage(generateErrorString(error.message));
         });

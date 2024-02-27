@@ -17,6 +17,8 @@ import { postTask, clearErrorMessage, generateErrorString } from '../api/apiCall
 export default function TaskList({ currentTasks, setTasks, errorMessage, setErrorMessage, isLoading, setIsLoading }) {
     const [taskRowKeyToFocus, setTaskRowKeyToFocus] = useState(-1);
     const isAnyRowDeleting = useRef(false);
+    const isAnyRowCreating = useRef(false);
+    const isAnyRowCompleting = useRef(false);
     let isCurrentTasksEmpty = (currentTasks.size === 0);
     
     /**
@@ -24,10 +26,10 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
      *
      * @return {void} 
      */
-    async function newTaskBtnClick() {
-        //TODO: rename to newTaskHandler()
+    async function newTaskHandler() {
         clearErrorMessage(setErrorMessage);
-        if (!isLoading) {
+        if (!isLoading && !isAnyRowCreating.current) {
+            isAnyRowCreating.current = true;
             try {
                 setIsLoading(true);
                 const response = await postTask(
@@ -39,6 +41,7 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
                 setIsLoading(false);
                 if (response.error) {
                     setErrorMessage(generateErrorString(response.error));
+                    isAnyRowCreating.current = false;
                     return;
                 }else if(response.id) { 
                     let nextTasks = new Map(currentTasks);
@@ -49,13 +52,15 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
             }catch (error) {
                 //todo: logging - network error || type error || invalid json response
             }
+            isAnyRowCreating.current = false;
         }
     }
 
     return (
         <>
             {errorMessage && <div className="error-container">{errorMessage}</div>}
-            {(!isCurrentTasksEmpty && !isLoading) && <div className="task-list">
+            {(!isCurrentTasksEmpty && !isLoading) && (
+            <div className="task-list">
                 <div className="tasks-header">
                     <div>Task description</div>
                 </div>
@@ -68,17 +73,24 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
                     currentTasks={currentTasks}
                     setTasks={setTasks}
                     setErrorMessage={setErrorMessage}
-                    newTaskHandler={newTaskBtnClick}
+                    newTaskHandler={newTaskHandler}
                     isLoading={isLoading}
                     setIsLoading={setIsLoading}
                     taskRowKeyToFocus={taskRowKeyToFocus}
                     setTaskRowKeyToFocus={setTaskRowKeyToFocus}
                     isAnyRowDeleting={isAnyRowDeleting}
+                    isAnyRowCompleting={isAnyRowCompleting}
+                    isAnyRowCreating={isAnyRowCreating}
                     />
                 ))}
-            </div>}
-            {(isCurrentTasksEmpty && !isLoading) && <div className="task-list empty">No tasks yet, add some using the button below.</div>}
-            <NewTaskBtn clickHandler={newTaskBtnClick} />
+            </div>
+            )}
+            {(isCurrentTasksEmpty && !isLoading) && (
+            <div className="task-list empty">
+                No tasks yet, add some using the button below.
+            </div>
+            )}
+            <NewTaskBtn clickHandler={newTaskHandler} />
         </>
     );
 }
