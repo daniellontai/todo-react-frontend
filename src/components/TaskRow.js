@@ -59,7 +59,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                     if (nextTasks.has(taskIdToDel)) {
                         nextTasks.delete(taskIdToDel);
                     }
-
+                    
                     setTasks(nextTasks);
                 }
             } catch (error) {
