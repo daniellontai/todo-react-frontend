@@ -16,6 +16,7 @@ import { postTask, clearErrorMessage } from '../api/apiCalls.js';
  */
 export default function TaskList({ currentTasks, setTasks, errorMessage, setErrorMessage, isLoading, setIsLoading }) {
     const [taskRowKeyToFocus, setTaskRowKeyToFocus] = useState(-1);
+    let isCurrentTasksEmpty = (currentTasks.size === 0);
     
     /**
      * Function to handle the click event of the new task button. 
@@ -54,7 +55,7 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
     return (
         <>
             {errorMessage && <div className="error-container">{errorMessage}</div>}
-            <div className="task-list">
+            {!isCurrentTasksEmpty && <div className="task-list">
                 <div className="tasks-header">
                     <div>Task description</div>
                 </div>
@@ -74,7 +75,8 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
                     setTaskRowKeyToFocus={setTaskRowKeyToFocus}
                     />
                 ))}
-            </div>
+            </div>}
+            {isCurrentTasksEmpty && <div className="task-list">No tasks yet, add some using the button below.</div>}
             <NewTaskBtn clickHandler={newTaskBtnClick} />
         </>
     );
