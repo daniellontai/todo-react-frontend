@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from 'react';
  * @param {function} setTaskRowKeyToFocus - The function to set the key of the task row to focus
  * @return {React.JSX.Element} The task row component
  */
-export default function TaskRow({ taskId, taskDescription, taskComplete, currentTasks, setTasks, setErrorMessage, newTaskHandler, isLoading, setIsLoading, taskRowKeyToFocus, setTaskRowKeyToFocus }) {
+export default function TaskRow({ taskId, taskDescription, taskComplete, currentTasks, setTasks, setErrorMessage, newTaskHandler, isLoading, setIsLoading, taskRowKeyToFocus, setTaskRowKeyToFocus, isAnyRowDeleting }) {
     const [descriptionValue, setDescriptionValue] = useState(taskDescription);
     //const [isTaskRowLoading, setIsTaskRowLoading] = useState(false);
     const descriptionOnBlurDelay = useRef(null);
@@ -33,7 +33,8 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
      */
     async function delTaskHandler(taskIdToDel, handlingKeyPress = false) {
         clearErrorMessage(setErrorMessage);
-        if (!isLoading) {
+        if (!isLoading && !isAnyRowDeleting.current) {
+            isAnyRowDeleting.current = true;
             try {
                 setIsLoading(true);
                 //setIsTaskRowLoading(true);
@@ -65,6 +66,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
             } catch (error) {
                 //todo: logging
             }
+            isAnyRowDeleting.current = false;
         }
     }
 

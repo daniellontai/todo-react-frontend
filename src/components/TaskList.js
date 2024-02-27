@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import TaskRow from './TaskRow.js';
 import NewTaskBtn from './NewTaskBtn.js';
 import { postTask, clearErrorMessage } from '../api/apiCalls.js';
@@ -16,6 +16,7 @@ import { postTask, clearErrorMessage } from '../api/apiCalls.js';
  */
 export default function TaskList({ currentTasks, setTasks, errorMessage, setErrorMessage, isLoading, setIsLoading }) {
     const [taskRowKeyToFocus, setTaskRowKeyToFocus] = useState(-1);
+    const isAnyRowDeleting = useRef(false);
     let isCurrentTasksEmpty = (currentTasks.size === 0);
     
     /**
@@ -73,6 +74,7 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
                     setIsLoading={setIsLoading}
                     taskRowKeyToFocus={taskRowKeyToFocus}
                     setTaskRowKeyToFocus={setTaskRowKeyToFocus}
+                    isAnyRowDeleting={isAnyRowDeleting}
                     />
                 ))}
             </div>}
