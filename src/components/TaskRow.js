@@ -32,7 +32,6 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
      * @return {void}
      */
     async function delTaskHandler(taskIdToDel, handlingKeyPress = false) {
-        console.log("del task handler ", taskIdToDel);
         clearErrorMessage(setErrorMessage);
         if (!isLoading) {
             try {
@@ -45,17 +44,14 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                     setErrorMessage(response.error[0].message);
                     return;
                 }else {
-                    debugger;
                     let nextTasks = new Map(currentTasks);
                     if (handlingKeyPress) {
-                        console.log("handling key press");
                         let previousKey = null;
                         for (let [key, task] of nextTasks) {
                             if (task.id === taskIdToDel) {
                                 break; // exit the loop once the task is found and deleted
                             }
                             previousKey = key;
-                            console.log("previousKey: ", previousKey);
                         }
                         setTaskRowKeyToFocus(previousKey);
                     }
@@ -63,7 +59,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                     if (nextTasks.has(taskIdToDel)) {
                         nextTasks.delete(taskIdToDel);
                     }
-
+                    
                     setTasks(nextTasks);
                 }
             } catch (error) {
