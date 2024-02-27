@@ -55,7 +55,7 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
     return (
         <>
             {errorMessage && <div className="error-container">{errorMessage}</div>}
-            {!isCurrentTasksEmpty && <div className="task-list">
+            {(!isCurrentTasksEmpty && !isLoading) && <div className="task-list">
                 <div className="tasks-header">
                     <div>Task description</div>
                 </div>
@@ -76,7 +76,7 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
                     />
                 ))}
             </div>}
-            {isCurrentTasksEmpty && <div className="task-list">No tasks yet, add some using the button below.</div>}
+            {(isCurrentTasksEmpty && isLoading) && <div className="task-list empty">No tasks yet, add some using the button below.</div>}
             <NewTaskBtn clickHandler={newTaskBtnClick} />
         </>
     );
