@@ -1,7 +1,7 @@
 import DelTaskBtn from './DelTaskBtn.js';
 import TaskDescription from './TaskDescription.js';
 import CompleteTaskBtn from './CompleteTaskBtn.js';
-import { delTask, patchTask, clearErrorMessage } from '../api/apiCalls.js';
+import { delTask, patchTask, clearErrorMessage, generateErrorString } from '../api/apiCalls.js';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -42,7 +42,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                 //setIsTaskRowLoading(false);
                 setIsLoading(false);
                 if (response.error) {
-                    setErrorMessage(response.error[0].message);
+                    setErrorMessage(generateErrorString(response.error));
                     return;
                 }else {
                     let nextTasks = new Map(currentTasks);
@@ -64,7 +64,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                     setTasks(nextTasks);
                 }
             } catch (error) {
-                //todo: logging
+                //todo: logging - network error || type error || invalid json response
             }
             isAnyRowDeleting.current = false;
         }
@@ -90,7 +90,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                 //setIsTaskRowLoading(false);
                 setIsLoading(false);
                 if (response.error) {
-                    setErrorMessage(response.error[0].message);
+                    setErrorMessage(generateErrorString(response.error));
                     return;
                 }else {
                     let nextTasks = new Map(currentTasks);
@@ -101,7 +101,7 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                     setTasks(nextTasks);
                 }
             } catch (error) {
-                //todo: logging
+                //todo: logging - network error || type error || invalid json response
             }
         }
     }
@@ -134,11 +134,11 @@ export default function TaskRow({ taskId, taskDescription, taskComplete, current
                     //setIsTaskRowLoading(false);
                     setIsLoading(false);
                     if (response.error) {
-                        setErrorMessage(response.error[0].message);
+                        setErrorMessage(generateErrorString(response.error));
                         return;
                     }
                 } catch (error) {
-                    //todo: logging
+                    //todo: logging - network error || type error || invalid json response
                 }
             }
         }, delayMilliseconds);

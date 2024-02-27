@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import TaskRow from './TaskRow.js';
 import NewTaskBtn from './NewTaskBtn.js';
-import { postTask, clearErrorMessage } from '../api/apiCalls.js';
+import { postTask, clearErrorMessage, generateErrorString } from '../api/apiCalls.js';
 
 /**
  * A React component for rendering a task list.
@@ -38,7 +38,7 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
                 );
                 setIsLoading(false);
                 if (response.error) {
-                    setErrorMessage(response.error[0].message);
+                    setErrorMessage(generateErrorString(response.error));
                     return;
                 }else if(response.id) { 
                     let nextTasks = new Map(currentTasks);
@@ -47,8 +47,7 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
                     setTaskRowKeyToFocus(response.id);
                 }
             }catch (error) {
-                setErrorMessage(error[0].message);
-                //todo: logging
+                //todo: logging - network error || type error || invalid json response
             }
         }
     }

@@ -1,5 +1,5 @@
 import TodoContainer from './TodoContainer.js';
-import { getTasks } from '../api/apiCalls.js';
+import { getTasks, generateErrorString } from '../api/apiCalls.js';
 import { useState, useEffect, useRef } from 'react';
 
 /**
@@ -28,7 +28,7 @@ export default function TodoApp(){
         getTasks().then(data => {
             setIsLoading(false);
             if (data.error) {
-                setErrorMessage(data.error[0].message);
+                setErrorMessage(generateErrorString(data.error));
                 return;
             }
 
@@ -42,7 +42,7 @@ export default function TodoApp(){
             const tasksMap = new Map(data.map(task => [task.id, task]));
             setTasks(tasksMap);
         }).catch(error => {
-            setErrorMessage(error.message);
+            setErrorMessage(generateErrorString(error.message));
         });
     }, []);
     

@@ -79,8 +79,11 @@ async function postTask(taskData) {
  * @return {Promise<object>} A JSON object representing the updated task
  */
 async function patchTask(id, taskData) {
+    if ((!Number.isInteger(id) || id < 1)) {
+        throw new Error ("id error (expected Int n > 0)");
+    }
     if (typeof taskData != "object" || taskData == null ) {
-        return {error: [{code: 3, message: "taskData error (expected object)"}]}
+        throw new Error("taskData error (expected object)");
     }
     try {
         const apiUrl = generateApiUrl("patch_task_by_id", id);
@@ -105,6 +108,9 @@ async function patchTask(id, taskData) {
  * @return {Promise} A Promise that resolves to the JSON response from the API
  */
 async function delTask(id) {
+    if ((!Number.isInteger(id) || id < 1)) {
+        throw new Error ("id error (expected Int n > 0)");
+    }
     try {
         const apiUrl = generateApiUrl("delete_task_by_id", id);
         const response  = await fetch(apiUrl, {
@@ -125,6 +131,11 @@ async function delTask(id) {
  */
 function clearErrorMessage(setErrorMessage) {
     setErrorMessage("");
+}
+
+function generateErrorString(error) {
+    let errorString = error.map(e => e.message).join('<br/>');
+    return errorString;
 }
 
 /**
@@ -154,4 +165,4 @@ function generateApiUrl(endpoint, id = 0) {
     }
 }
 
-export {getTasks, getTaskById, postTask, patchTask, delTask, clearErrorMessage};
+export {getTasks, getTaskById, postTask, patchTask, delTask, clearErrorMessage, generateErrorString};
