@@ -42,11 +42,6 @@ body {
 	max-width: 800px;
 	margin: auto;
 }
-
-.task-list.empty {
-	text-align: center;
-}
-
 .tasks-header,
 .task-row,
 .task-new {
