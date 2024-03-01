@@ -7,7 +7,10 @@ import { useState, useEffect, useRef } from 'react';
  *
  * @return {JSX.Element} The TodoContainer component with props
  */
-export default function TodoApp(){
+export default function TodoApp() {
+    if (window.location.pathname !== "/") {
+        window.location.pathname = "/";
+    }
     const [currentTasks, setTasks] = useState(new Map());
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(true);
@@ -22,7 +25,7 @@ export default function TodoApp(){
             clearTimeout(errorMessageTimeout.current);
         };
     }, [errorMessage])
-    
+
     useEffect(() => {
         setIsLoading(true);
         getTasks().then(data => {
@@ -33,14 +36,14 @@ export default function TodoApp(){
             }
 
             data.sort((a, b) => {
-            if (a.complete === b.complete) {
-                // If both completions are equal, keeepe the sort by task id
-                return a.id - b.id;
-            } else if (a.complete) {
-                return 1;
-            } else {
-                return -1;
-            }
+                if (a.complete === b.complete) {
+                    // If both completions are equal, keeepe the sort by task id
+                    return a.id - b.id;
+                } else if (a.complete) {
+                    return 1;
+                } else {
+                    return -1;
+                }
             });
             const nextTasks = new Map(data.map(task => [task.id, task]));
             setTasks(nextTasks);
@@ -48,8 +51,8 @@ export default function TodoApp(){
             setErrorMessage(generateErrorString(error.message));
         });
     }, []);
-    
-    
+
+
     return (
         <TodoContainer
             currentTasks={currentTasks}
