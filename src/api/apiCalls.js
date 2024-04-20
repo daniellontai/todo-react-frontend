@@ -46,6 +46,7 @@ async function getListTasks(listId) {
 		const jsonResponse = await response.json();
 		return jsonResponse;
 	} catch (error) {
+		console.log(error);
 		return {
 			error: [
 				{
@@ -241,7 +242,9 @@ function generateErrorString(error) {
  */
 function generateApiUrl(endpoint, id = 0) {
 	let apiBaseUrl = window.env.REACT_APP_API_URL;
-	let idCondition = Number.isInteger(id) && id > 0;
+
+	let idCondition = (Number.isInteger(id) && id > 0) || isValidCuid(id);
+
 	switch (endpoint) {
 		case 'get_lists':
 		case 'post_list':
@@ -255,13 +258,24 @@ function generateApiUrl(endpoint, id = 0) {
 			if (idCondition) {
 				return apiBaseUrl + apiEndpoints[endpoint] + id;
 			} else {
-				throw new Error('generateApiUrl id error (expected Int)');
+				throw new Error('generateApiUrl id error (expected Int), got ' + id);
 			}
 		default:
 			throw new Error(
 				'generateApiUrl endpoint error (expected one of [get_lists, post_list, get_tasks, post_task, get_list_tasks, get_task_by_id, patch_task_by_id, delete_task_by_id])'
 			);
 	}
+}
+
+/**
+ * Checks if the input string is a valid CUID.
+ * Based on https://github.com/paralleldrive/cuid/issues/88
+ *
+ * @param {string} str - The string to check.
+ * @return {boolean} Indicates if the string is a valid CUID.
+ */
+function isValidCuid(str) {
+	return str.length > 0 && str.charAt(0) === 'c' && str.length >= 7;
 }
 
 export { getLists, getListTasks, postList, getTasks, getTaskById, postTask, patchTask, delTask, clearErrorMessage, generateErrorString };

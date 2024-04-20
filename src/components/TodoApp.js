@@ -1,6 +1,7 @@
 import TodoContainer from './TodoContainer.js';
 import { generateErrorString, getLists, getListTasks } from '../api/apiCalls.js';
 import { useState, useEffect, useRef } from 'react';
+import Header from './Header.js';
 
 /**
  * TodoApp component that manages tasks state, initial task fetching, loading state and error messages.
@@ -58,8 +59,15 @@ export default function TodoApp() {
 		async function fetchTasksOfList() {
 			if (selectedList) {
 				setIsLoading(true);
-				setTasks(await getListTasks(selectedList));
+				const tasksOfSelectedList = await getListTasks(selectedList);
 				setIsLoading(false);
+				if (tasksOfSelectedList.error) {
+					setErrorMessage(generateErrorString(tasksOfSelectedList.error));
+					return;
+				}
+				//console.log(tasksOfSelectedList);
+				const nextTasks = new Map(tasksOfSelectedList.map((task) => [task.id, task]));
+				setTasks(nextTasks);
 			}
 		}
 		fetchTasksOfList();
@@ -94,13 +102,21 @@ export default function TodoApp() {
 	// }, []);
 
 	return (
-		<TodoContainer
-			currentTasks={currentTasks}
-			setTasks={setTasks}
-			errorMessage={errorMessage}
-			setErrorMessage={setErrorMessage}
-			isLoading={isLoading}
-			setIsLoading={setIsLoading}
-		/>
+		<>
+			<Header
+				lists={lists}
+				selectedList={selectedList}
+				setSelectedList={setSelectedList}
+			/>
+			<TodoContainer
+				currentTasks={currentTasks}
+				setTasks={setTasks}
+				errorMessage={errorMessage}
+				setErrorMessage={setErrorMessage}
+				isLoading={isLoading}
+				setIsLoading={setIsLoading}
+				selectedList={selectedList}
+			/>
+		</>
 	);
 }
