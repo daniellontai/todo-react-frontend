@@ -1,5 +1,5 @@
 import TodoContainer from './TodoContainer.js';
-import { generateErrorString, getLists, getListTasks } from '../api/apiCalls.js';
+import { clearErrorMessage, generateErrorString, getLists, getListTasks, postList } from '../api/apiCalls.js';
 import { useState, useEffect, useRef } from 'react';
 import Header from './Header.js';
 
@@ -33,7 +33,7 @@ export default function TodoApp() {
 	useEffect(() => {
 		setIsLoading(true);
 		/**
-		 * Fetches the lists and handles the response, setting state and error message as needed.
+		 * Fetches the initial lists and handles the response, setting state and error message as needed.
 		 */
 		async function fetchLists() {
 			try {
@@ -71,6 +71,7 @@ export default function TodoApp() {
 			}
 		}
 		fetchTasksOfList();
+		document.title = selectedList ? `Todo - ${lists.find((list) => list.id === selectedList).name}` : 'Todo';
 	}, [selectedList]);
 
 	// useEffect(() => {
@@ -101,12 +102,39 @@ export default function TodoApp() {
 	// 		});
 	// }, []);
 
+	function newTaskListPopupHandler() {
+		const name = prompt('Enter name of new list');
+		if (name) {
+			postNewTaskListHandler({ name });
+		}
+	}
+
+	async function postNewTaskListHandler({ name }) {
+		clearErrorMessage(setErrorMessage);
+		let listData = {
+			name: name,
+		};
+		try {
+			setIsLoading(true);
+			let list = await postList(listData);
+
+			setIsLoading(false);
+			if (list.error) {
+				setErrorMessage(generateErrorString(list.error));
+				return;
+			}
+			setLists([...lists, list]);
+			setSelectedList(list.id);
+		} catch (error) {}
+	}
+
 	return (
 		<>
 			<Header
 				lists={lists}
 				selectedList={selectedList}
 				setSelectedList={setSelectedList}
+				newTaskListPopupHandler={newTaskListPopupHandler}
 			/>
 			<TodoContainer
 				currentTasks={currentTasks}

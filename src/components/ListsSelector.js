@@ -1,5 +1,5 @@
-import { Autocomplete, Tooltip } from '@mui/joy';
-import '../styles.css';
+import { Autocomplete } from '@mui/joy';
+//import '../styles.css';
 
 export default function ListsSelector({ lists, selectedList, setSelectedList }) {
 	return (
@@ -17,19 +17,18 @@ export default function ListsSelector({ lists, selectedList, setSelectedList }) 
 					))}
 				</select>
 			</div> */}
-			<Tooltip title="Select a task list">
-				<Autocomplete
-					placeholder={lists.find((list) => list.id === selectedList)?.name}
-					options={lists}
-					getOptionLabel={(option) => option.name}
-					onChange={(event, value) => {
-						if (value) {
-							setSelectedList(value.id);
-						}
-					}}
-					className="list-selector"
-				/>
-			</Tooltip>
+
+			<Autocomplete
+				placeholder={lists.find((list) => list.id === selectedList)?.name}
+				options={lists}
+				getOptionLabel={(option) => option.name}
+				onChange={(event, value) => {
+					if (value) {
+						setSelectedList(value.id);
+					}
+				}}
+				className="list-selector"
+			/>
 		</>
 	);
 }
