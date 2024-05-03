@@ -8,6 +8,7 @@
 		--secondary-bg-color: #ccceee;
 		--text-color: #333;
 		--accent-color: rgba(119, 119, 255, 1):
+		--header-bg-color: #ccceee;
 	}
 }
 
@@ -16,10 +17,11 @@
 		--main-bg-color: #222;
 		--secondary-bg-color: #333444;
 		--text-color: #fefefe;
-		--accent-color: rgba(119, 119, 255, 0.5):
+		--accent-color: rgba(119, 119, 255, 0.5);
+		--header-bg-color:  linear-gradient(-45deg, #2f314d, rgba(69, 69, 143, 0.5));
 	}
 	:root {
-		--accent-color: rgba(119, 119, 255, 0.5):
+		--accent-color: rgba(119, 119, 255, 0.5);
 	}
 }
 
@@ -139,4 +141,67 @@ button * {
 	width: 100px;
 	height: 100px;
 	margin: auto;
+}
+
+.header-container {
+    max-width: 800px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    
+}
+
+header {
+    background: var(--header-bg-color);
+    border-bottom: 1px solid var(--accent-color);
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container img {
+    max-height: 50px;
+    margin-right: 12px;
+}
+
+.logo h1 {
+    margin: 0;
+}
+
+#root .MuiAutocomplete-root {
+    background: transparent;
+    border-radius: 0;
+    border: 1px solid var(--accent-color);
+    padding: 10px 10px 10px 30px;
+}
+
+#root .MuiAutocomplete-root svg {
+    fill: var(--accent-color);
+}
+
+#root .MuiAutocomplete-root button:hover svg {
+    fill: white;
+}
+
+#root .MuiAutocomplete-root button:hover {
+    background: none;
+}
+
+#root .MuiAutocomplete-root.Mui-focused {
+    border-color: white;
+}
+
+#root~.MuiAutocomplete-listbox {
+    background: var(--main-bg-color);
+	border-radius: 0;
+}
+
+#root~.MuiAutocomplete-listbox li {
+    color: var(--text-color);
 }
