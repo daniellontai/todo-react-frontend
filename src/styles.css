@@ -208,4 +208,5 @@ header {
 
 .listselector-container {
     display: flex;
+	justify-content: end;
 }
