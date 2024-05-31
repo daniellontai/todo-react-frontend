@@ -14,16 +14,12 @@ export default function Header({ lists, selectedList, setSelectedList, newTaskLi
 					<h1>Todo</h1>
 				</div>
 				<div className="listselector-container">
-					<Tooltip title="Select a task list">
-						<ListsSelector
-							lists={lists}
-							selectedList={selectedList}
-							setSelectedList={setSelectedList}
-						/>
-					</Tooltip>
-					<Tooltip title="Add a new task list">
-						<NewTaskBtn clickHandler={newTaskListPopupHandler} />
-					</Tooltip>
+					<ListsSelector
+						lists={lists}
+						selectedList={selectedList}
+						setSelectedList={setSelectedList}
+					/>
+					<NewTaskBtn clickHandler={newTaskListPopupHandler} />
 				</div>
 			</div>
 		</header>
