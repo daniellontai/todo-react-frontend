@@ -1,6 +1,7 @@
 const apiEndpoints = {
 	get_lists: '/lists',
 	post_list: '/list',
+	delete_list_by_id: '/list/',
 	get_list_tasks: '/tasks/',
 	get_tasks: '/tasks', //deprecated
 	post_task: '/task',
@@ -46,7 +47,6 @@ async function getListTasks(listId) {
 		const jsonResponse = await response.json();
 		return jsonResponse;
 	} catch (error) {
-		console.log(error);
 		return {
 			error: [
 				{
@@ -86,6 +86,21 @@ async function postList(listData) {
 	} catch (error) {
 		return {
 			error: [{ code: error.code, message: 'Creating list was unsuccessful. API call returned invalid response or application failed to generate API url. [postList]' }],
+		};
+	}
+}
+
+async function deleteList(listId) {
+	try {
+		const apiUrl = generateApiUrl('delete_list_by_id', listId);
+		const response = await fetch(apiUrl, {
+			method: 'DELETE',
+		});
+		const jsonResponse = await response.json();
+		return jsonResponse;
+	} catch (error) {
+		return {
+			error: [{ code: error.code, message: 'Deleting list was unsuccessful. API call returned invalid response or application failed to generate API url. [deleteList]' }],
 		};
 	}
 }
@@ -251,6 +266,7 @@ function generateApiUrl(endpoint, id = 0) {
 		case 'get_tasks': //deprecated
 		case 'post_task':
 			return apiBaseUrl + apiEndpoints[endpoint];
+		case 'delete_list_by_id':
 		case 'get_list_tasks':
 		case 'get_task_by_id':
 		case 'patch_task_by_id':
@@ -258,11 +274,11 @@ function generateApiUrl(endpoint, id = 0) {
 			if (idCondition) {
 				return apiBaseUrl + apiEndpoints[endpoint] + id;
 			} else {
-				throw new Error('generateApiUrl id error (expected Int), got ' + id);
+				throw new Error('generateApiUrl id error (expected Int or Cuid), got ' + id);
 			}
 		default:
 			throw new Error(
-				'generateApiUrl endpoint error (expected one of [get_lists, post_list, get_tasks, post_task, get_list_tasks, get_task_by_id, patch_task_by_id, delete_task_by_id])'
+				'generateApiUrl endpoint error (expected one of [get_lists, post_list, delete_list_by_id, get_tasks, post_task, get_list_tasks, get_task_by_id, patch_task_by_id, delete_task_by_id])'
 			);
 	}
 }
@@ -278,4 +294,4 @@ function isValidCuid(str) {
 	return str.length > 0 && str.charAt(0) === 'c' && str.length >= 7;
 }
 
-export { getLists, getListTasks, postList, getTasks, getTaskById, postTask, patchTask, delTask, clearErrorMessage, generateErrorString };
+export { getLists, getListTasks, postList, deleteList, getTasks, getTaskById, postTask, patchTask, delTask, clearErrorMessage, generateErrorString };
