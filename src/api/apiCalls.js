@@ -90,6 +90,12 @@ async function postList(listData) {
 	}
 }
 
+/**
+ * Asynchronously deletes a list identified by listId from the server.
+ *
+ * @param {string} listId - The id of the list to be deleted
+ * @return {Promise<object>} A JSON object representing the deleted list or an error object
+ */
 async function deleteList(listId) {
 	try {
 		const apiUrl = generateApiUrl('delete_list_by_id', listId);
@@ -101,30 +107,6 @@ async function deleteList(listId) {
 	} catch (error) {
 		return {
 			error: [{ code: error.code, message: 'Deleting list was unsuccessful. API call returned invalid response or application failed to generate API url. [deleteList]' }],
-		};
-	}
-}
-
-/**
- * Deprecated - Asynchronously fetches tasks data from the API.
- *
- * @return {Promise<object>} The JSON response containing the tasks data.
- */
-async function getTasks() {
-	try {
-		const apiUrl = generateApiUrl('get_tasks');
-		const response = await fetch(apiUrl);
-		const jsonResponse = await response.json();
-		return jsonResponse;
-	} catch (error) {
-		return {
-			error: [
-				{
-					code: error.code,
-					message:
-						'Failed to get tasks from database. API call returned invalid response or application failed to generate API url. Please ensure that the server is running. [getTasks]',
-				},
-			],
 		};
 	}
 }
@@ -243,6 +225,12 @@ function clearErrorMessage(setErrorMessage) {
 	setErrorMessage('');
 }
 
+/**
+ * Generates an error string by joining the error messages with a line break.
+ *
+ * @param {Array<Object>} error - An array of error objects containing a message property.
+ * @return {string} The generated error string.
+ */
 function generateErrorString(error) {
 	let errorString = error.map((e) => e.message).join('<br/>');
 	return errorString;
@@ -294,4 +282,4 @@ function isValidCuid(str) {
 	return str.length > 0 && str.charAt(0) === 'c' && str.length >= 7;
 }
 
-export { getLists, getListTasks, postList, deleteList, getTasks, getTaskById, postTask, patchTask, delTask, clearErrorMessage, generateErrorString };
+export { getLists, getListTasks, postList, deleteList, getTaskById, postTask, patchTask, delTask, clearErrorMessage, generateErrorString };
