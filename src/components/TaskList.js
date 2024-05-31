@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import TaskRow from './TaskRow.js';
-import NewTaskBtn from './NewTaskBtn.js';
+import NewTaskBtn from './PlusBtn.js';
 import { postTask, clearErrorMessage, generateErrorString } from '../api/apiCalls.js';
 
 /**
@@ -21,6 +21,7 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
 	const isAnyRowCreating = useRef(false);
 	const isAnyRowCompleting = useRef(false);
 	let isCurrentTasksEmpty = currentTasks.size === 0;
+	let isSelectedListEmpty = selectedList === '';
 
 	/**
 	 * Function to handle the click event of the new task button.
@@ -59,34 +60,39 @@ export default function TaskList({ currentTasks, setTasks, errorMessage, setErro
 	return (
 		<>
 			{errorMessage && <div className="error-container">{errorMessage}</div>}
-			{!isCurrentTasksEmpty && !isLoading && (
-				<div className="task-list">
-					<div className="tasks-header">
-						<div>Task description</div>
-					</div>
-					{Array.from(currentTasks, ([taskId, task]) => (
-						<TaskRow
-							key={taskId}
-							taskId={taskId}
-							taskDescription={task.description}
-							taskComplete={task.complete}
-							currentTasks={currentTasks}
-							setTasks={setTasks}
-							setErrorMessage={setErrorMessage}
-							newTaskHandler={newTaskHandler}
-							isLoading={isLoading}
-							setIsLoading={setIsLoading}
-							taskRowKeyToFocus={taskRowKeyToFocus}
-							setTaskRowKeyToFocus={setTaskRowKeyToFocus}
-							isAnyRowDeleting={isAnyRowDeleting}
-							isAnyRowCompleting={isAnyRowCompleting}
-							isAnyRowCreating={isAnyRowCreating}
-						/>
-					))}
-				</div>
-			)}
-			{isCurrentTasksEmpty && !isLoading && <div className="task-list empty">No tasks yet, add some using the button below.</div>}
-			<NewTaskBtn clickHandler={newTaskHandler} />
+			<div className="task-list">
+				{!isCurrentTasksEmpty && !isLoading && (
+					<>
+						<div className="tasks-header">
+							<div>
+								<h3 className="m-0">Task description</h3>
+							</div>
+						</div>
+						{Array.from(currentTasks, ([taskId, task]) => (
+							<TaskRow
+								key={taskId}
+								taskId={taskId}
+								taskDescription={task.description}
+								taskComplete={task.complete}
+								currentTasks={currentTasks}
+								setTasks={setTasks}
+								setErrorMessage={setErrorMessage}
+								newTaskHandler={newTaskHandler}
+								isLoading={isLoading}
+								setIsLoading={setIsLoading}
+								taskRowKeyToFocus={taskRowKeyToFocus}
+								setTaskRowKeyToFocus={setTaskRowKeyToFocus}
+								isAnyRowDeleting={isAnyRowDeleting}
+								isAnyRowCompleting={isAnyRowCompleting}
+								isAnyRowCreating={isAnyRowCreating}
+							/>
+						))}
+					</>
+				)}
+				{isCurrentTasksEmpty && !isSelectedListEmpty && !isLoading && <div className="task-list empty">No tasks yet, add some using the button below.</div>}
+				{!isSelectedListEmpty && !isLoading && <NewTaskBtn clickHandler={newTaskHandler} />}
+				{isSelectedListEmpty && !isLoading && <div className="task-list empty">No list selected. Please select a list.</div>}
+			</div>
 		</>
 	);
 }
