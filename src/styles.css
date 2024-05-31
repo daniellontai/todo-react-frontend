@@ -33,11 +33,17 @@ body {
 		background-color: var(--main-bg-color);
 	}
 
+.m-0 {
+	margin: 0;
+}
+
 .todo-container {
-	background: var(--secondary-bg-color);
-	max-width: 1140px;
-	margin: auto;
-	padding: 20px;
+    background: var(--secondary-bg-color);
+    max-width: 1140px;
+    margin: auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 5fr;
 }
 
 .task-list {
@@ -51,7 +57,7 @@ body {
 
 .tasks-header,
 .task-row,
-.task-new {
+.plus-btn {
 	display: grid;
 	padding: 10px;
 	align-items: center;
@@ -80,16 +86,17 @@ button * {
 }
 
 .tasks-header {
-	grid-template-columns: 1fr 15fr;
+	grid-template-columns: 1fr 22fr 1fr;
+    padding: 5px;
 }
 
 .task-row {
-	grid-template-columns: 1fr 14fr 1fr;
+	grid-template-columns: 1fr 22fr 1fr;
 	padding: 0;
 	margin: 0 0 15px;
 }
 
-.task-new {
+.plus-btn {
 	grid-template-columns: 1fr;
 	justify-items: center;
 }
@@ -208,4 +215,71 @@ header {
 
 .listselector-container {
     display: flex;
+    justify-content: end;
+}
+
+a.MuiLink-root {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 200px;
+    color: var(--text-color);
+}
+
+.todo-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.todo-container li {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-image: linear-gradient(90deg, var(--secondary-bg-color) 0 3%, var(--accent-color) 50%) 30;
+    border-bottom: 1px solid;
+}
+
+.todo-container li.selected {
+    background: var(--accent-color);
+    padding-left: 10px;
+	font-weight: 600;
+}
+
+.todo-container li:last-child {
+    border-image: linear-gradient(90deg, var(--secondary-bg-color) 0 3%, var(--accent-color) 50%, var(--secondary-bg-color) 96% 100%) 30;
+}
+
+a.MuiLink-root:hover {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.MuiLink-root + button {
+    border: none;
+    font-size: 10px;
+    width: 10px !important;
+    height: 10px !important;
+}
+
+.MuiLink-root + button:hover {
+    background: none;
+}
+
+.MuiLink-root + button svg {
+    font-size: 10px;
+}
+
+.MuiLink-root + button svg path {
+    fill: var(--text-color);
+    
+}
+
+.MuiLink-root + button:hover svg path {
+    fill: var(--accent-color)
+}
+
+.todo-container nav {
+    border-image: linear-gradient(var(--secondary-bg-color) 0 15%, var(--accent-color) 50%, var(--secondary-bg-color) 92% 100%) 30;
+    border-right-width: 4px;
+    border-right-style: solid;
 }
