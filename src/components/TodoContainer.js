@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import TaskList from './TaskList.js';
+import ListOfLists from './ListOfLists.js';
 
 /**
  * Function for rendering the TodoContainer component based on loading state.
@@ -13,22 +14,42 @@ import TaskList from './TaskList.js';
  * @param {string} selectedList - selected list cuid
  * @return {jsx} returns JSX for rendering the TodoContainer component
  */
-export default function TodoContainer({ currentTasks, setTasks, errorMessage, setErrorMessage, isLoading, setIsLoading, selectedList }) {
+export default function TodoContainer({
+	currentTasks,
+	setTasks,
+	errorMessage,
+	setErrorMessage,
+	isLoading,
+	setIsLoading,
+	lists,
+	selectedList,
+	setSelectedList,
+	deleteTaskListHandler,
+	newTaskListPopupHandler,
+}) {
 	const firstRender = useRef(true);
 	if (firstRender.current) {
 		firstRender.current = false;
 		return (
 			<div className="todo-container">
 				{!isLoading && (
-					<TaskList
-						currentTasks={currentTasks}
-						setTasks={setTasks}
-						errorMessage={errorMessage}
-						setErrorMessage={setErrorMessage}
-						isloading={isLoading}
-						setIsLoading={setIsLoading}
-						selectedList={selectedList}
-					/>
+					<>
+						<ListOfLists
+							lists={lists}
+							selectedList={selectedList}
+							setSelectedList={setSelectedList}
+							deleteTaskListHandler={deleteTaskListHandler}
+						/>
+						<TaskList
+							currentTasks={currentTasks}
+							setTasks={setTasks}
+							errorMessage={errorMessage}
+							setErrorMessage={setErrorMessage}
+							isloading={isLoading}
+							setIsLoading={setIsLoading}
+							selectedList={selectedList}
+						/>
+					</>
 				)}
 				{isLoading && <Loader />}
 			</div>
@@ -36,6 +57,13 @@ export default function TodoContainer({ currentTasks, setTasks, errorMessage, se
 	} else {
 		return (
 			<div className="todo-container">
+				<ListOfLists
+					lists={lists}
+					selectedList={selectedList}
+					setSelectedList={setSelectedList}
+					deleteTaskListHandler={deleteTaskListHandler}
+					newTaskListPopupHandler={newTaskListPopupHandler}
+				/>
 				<TaskList
 					currentTasks={currentTasks}
 					setTasks={setTasks}
