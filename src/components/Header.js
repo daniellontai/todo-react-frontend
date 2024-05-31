@@ -1,6 +1,5 @@
-import { Tooltip } from '@mui/joy';
 import ListsSelector from './ListsSelector';
-import NewTaskBtn from './NewTaskBtn';
+import NewTaskBtn from './PlusBtn';
 
 export default function Header({ lists, selectedList, setSelectedList, newTaskListPopupHandler }) {
 	return (
