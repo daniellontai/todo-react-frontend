@@ -1,5 +1,5 @@
 import TodoContainer from './TodoContainer.js';
-import { clearErrorMessage, generateErrorString, getLists, getListTasks, postList } from '../api/apiCalls.js';
+import { clearErrorMessage, deleteList, generateErrorString, getLists, getListTasks, postList } from '../api/apiCalls.js';
 import { useState, useEffect, useRef } from 'react';
 import Header from './Header.js';
 
@@ -44,12 +44,12 @@ export default function TodoApp() {
 					return;
 				}
 				setLists(lists);
-				if (initialRender.current) {
+				if (initialRender.current && lists.length > 0) {
 					setSelectedList(lists[0].id);
 					initialRender.current = false;
 				}
 			} catch (error) {
-				setErrorMessage(generateErrorString(error.message));
+				setErrorMessage(generateErrorString(error));
 			}
 		}
 		fetchLists();
@@ -65,42 +65,17 @@ export default function TodoApp() {
 					setErrorMessage(generateErrorString(tasksOfSelectedList.error));
 					return;
 				}
-				//console.log(tasksOfSelectedList);
 				const nextTasks = new Map(tasksOfSelectedList.map((task) => [task.id, task]));
 				setTasks(nextTasks);
+			} else {
+				setTasks(new Map());
 			}
 		}
 		fetchTasksOfList();
-		document.title = selectedList ? `Todo - ${lists.find((list) => list.id === selectedList).name}` : 'Todo';
+		if (selectedList) {
+			document.title = selectedList ? `Todo - ${lists.find((list) => list.id === selectedList).name}` : 'Todo';
+		}
 	}, [selectedList]);
-
-	// useEffect(() => {
-	// 	setIsLoading(true);
-	// 	getTasks()
-	// 		.then((data) => {
-	// 			setIsLoading(false);
-	// 			if (data.error) {
-	// 				setErrorMessage(generateErrorString(data.error));
-	// 				return;
-	// 			}
-
-	// 			data.sort((a, b) => {
-	// 				if (a.complete === b.complete) {
-	// 					// If both completions are equal, keeepe the sort by task id
-	// 					return a.id - b.id;
-	// 				} else if (a.complete) {
-	// 					return 1;
-	// 				} else {
-	// 					return -1;
-	// 				}
-	// 			});
-	// 			const nextTasks = new Map(data.map((task) => [task.id, task]));
-	// 			setTasks(nextTasks);
-	// 		})
-	// 		.catch((error) => {
-	// 			setErrorMessage(generateErrorString(error.message));
-	// 		});
-	// }, []);
 
 	function newTaskListPopupHandler() {
 		const name = prompt('Enter name of new list');
@@ -128,6 +103,33 @@ export default function TodoApp() {
 		} catch (error) {}
 	}
 
+	async function deleteTaskListHandler(listId) {
+		let alert = window.confirm('Are you sure you want to delete list ' + lists.find((list) => list.id === listId).name + '?');
+		if (alert) {
+			try {
+				setIsLoading(true);
+				const response = await deleteList(listId);
+				setIsLoading(false);
+				if (response.error) {
+					setErrorMessage(generateErrorString(response.error));
+					return;
+				}
+
+				const updatedLists = lists.filter((list) => list.id !== listId);
+				setLists(updatedLists);
+
+				if (updatedLists.length === 0) {
+					setSelectedList('');
+					document.title = 'Todo';
+				} else {
+					setSelectedList(updatedLists[0].id);
+				}
+			} catch (error) {
+				setErrorMessage(generateErrorString(error));
+			}
+		}
+	}
+
 	return (
 		<>
 			<Header
@@ -143,7 +145,11 @@ export default function TodoApp() {
 				setErrorMessage={setErrorMessage}
 				isLoading={isLoading}
 				setIsLoading={setIsLoading}
+				lists={lists}
 				selectedList={selectedList}
+				setSelectedList={setSelectedList}
+				deleteTaskListHandler={deleteTaskListHandler}
+				newTaskListPopupHandler={newTaskListPopupHandler}
 			/>
 		</>
 	);
