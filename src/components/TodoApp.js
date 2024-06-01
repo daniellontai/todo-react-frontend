@@ -146,6 +146,7 @@ export default function TodoApp() {
 				isLoading={isLoading}
 				setIsLoading={setIsLoading}
 				lists={lists}
+				setLists={setLists}
 				selectedList={selectedList}
 				setSelectedList={setSelectedList}
 				deleteTaskListHandler={deleteTaskListHandler}

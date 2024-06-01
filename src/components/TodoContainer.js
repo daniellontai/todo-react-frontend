@@ -22,6 +22,7 @@ export default function TodoContainer({
 	isLoading,
 	setIsLoading,
 	lists,
+	setLists,
 	selectedList,
 	setSelectedList,
 	deleteTaskListHandler,
@@ -36,9 +37,13 @@ export default function TodoContainer({
 					<>
 						<ListOfLists
 							lists={lists}
+							setLists={setLists}
 							selectedList={selectedList}
 							setSelectedList={setSelectedList}
 							deleteTaskListHandler={deleteTaskListHandler}
+							newTaskListPopupHandler={newTaskListPopupHandler}
+							setIsLoading={setIsLoading}
+							setErrorMessage={setErrorMessage}
 						/>
 						<TaskList
 							currentTasks={currentTasks}
@@ -59,10 +64,13 @@ export default function TodoContainer({
 			<div className="todo-container">
 				<ListOfLists
 					lists={lists}
+					setLists={setLists}
 					selectedList={selectedList}
 					setSelectedList={setSelectedList}
 					deleteTaskListHandler={deleteTaskListHandler}
 					newTaskListPopupHandler={newTaskListPopupHandler}
+					setIsLoading={setIsLoading}
+					setErrorMessage={setErrorMessage}
 				/>
 				<TaskList
 					currentTasks={currentTasks}
