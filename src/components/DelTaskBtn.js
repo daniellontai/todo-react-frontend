@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashCan } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { useRef } from 'react';
 
 /**
@@ -9,13 +9,19 @@ import { useRef } from 'react';
  * @return {React.JSX.Element} A button component with a trash can icon
  */
 export default function DelTaskBtn({ clickHandler }) {
-    const deleting = useRef(false);
-    const handleClick = () => {
-        if (!deleting.current) {
-            clickHandler();
-            deleting.current = true;
-        }
-        
-    };
-    return <button tabIndex="-1" className="task-delete" onClick={handleClick}><FontAwesomeIcon icon={faTrashCan} /></button>;
+	const deleting = useRef(false);
+	const handleClick = () => {
+		if (!deleting.current) {
+			clickHandler();
+			deleting.current = true;
+		}
+	};
+	return (
+		<button
+			tabIndex="-1"
+			className="task-delete icon-btn"
+			onClick={handleClick}>
+			<FontAwesomeIcon icon={faTrashCan} />
+		</button>
+	);
 }

@@ -17,7 +17,9 @@ export default function PlusBtn({ clickHandler, className }) {
 		<div
 			tabIndex="-1"
 			className={classString}>
-			<button onClick={clickHandler}>
+			<button
+				onClick={clickHandler}
+				className="icon-btn">
 				<FontAwesomeIcon icon={faPlus} />
 			</button>
 		</div>
